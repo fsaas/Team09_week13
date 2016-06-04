@@ -1,9 +1,8 @@
 package com.nts.cleancode.collections;
 
 public class Map {
-	private static int INITIAL_CAPACITY = 10;
-	protected Object[] keys = new Object[INITIAL_CAPACITY];
-	protected Object[] values = new Object[INITIAL_CAPACITY];
+	protected List keys = new List();
+	protected List values = new List();
 	private int size = 0;
 	private int indexWhereKeyFound;
 	private boolean readOnly;
@@ -12,29 +11,29 @@ public class Map {
 		return size == 0;
 	}
 
-
 	public void add(Object key, Object value) {
-		if (!readOnly) {
-			for (int i = 0; i < size; i++)
-				if (keys[i].equals(key)) {
-					values[i] = value;
-					return;
-				}
+		if (readOnly)
+			return;
 
-			int newSize = size + 1;
-			if (newSize > keys.length) {
-				Object[] newKeys = new Object[keys.length + INITIAL_CAPACITY];
-				Object[] newValues = new Object[keys.length + INITIAL_CAPACITY];
-				System.arraycopy(keys, 0, newKeys, 0, size);
-				System.arraycopy(values, 0, newValues, 0, size);
-				keys = newKeys;
-				values = newValues;
+		for (int i = 0; i < size; i++)
+			if (keys.get(i).equals(key)) {
+				setValue(i, value);
+				return;
 			}
 
-			keys[size] = key;
-			values[size] = value;
-			size++;
-		}
+		keys.add(key);
+		values.add(value);
+		size++;
+
+	}
+	
+	private void setKey(int i, Object object)
+	{
+		keys.set(i, object);
+	}
+	private void setValue(int i,Object value)
+	{
+		values.set(i, value);
 	}
 
 	public int size() {
@@ -45,9 +44,9 @@ public class Map {
 		if (readOnly)
 			return false;
 		for (int i = 0; i < size; i++)
-			if (keys[i].equals(key)) {
-				keys[i] = null;
-				values[i] = null;
+			if (keys.get(i).equals(key)) {
+				setKey(i,null);
+				setValue(i, null);
 				size--;
 				return true;
 			}
@@ -56,15 +55,14 @@ public class Map {
 
 	public boolean contains(Object value) {
 		for (int i = 0; i < size; i++)
-			if ((value == null && values[i] == null)
-				|| (values[i] != null && values[i].equals(value)))
+			if ((value == null && values.get(i) == null) || (values.get(i) != null && values.get(i).equals(value)))
 				return true;
 		return false;
 	}
 
 	public boolean containsKey(Object key) {
 		for (int i = 0; i < size; i++)
-			if (keys[i] != null && keys[i].equals(key)) {
+			if (keys.get(i) != null && keys.get(i).equals(key)) {
 				indexWhereKeyFound = i;
 				return true;
 			}
@@ -74,20 +72,19 @@ public class Map {
 	public Object get(Object key) {
 		if (!containsKey(key))
 			return null;
-		return values[indexWhereKeyFound];
+		return values.get(indexWhereKeyFound);
 	}
 
 	public int capacity() {
-		return keys.length;
+		return keys.capacity();
 	}
 
 	public void setReadOnly(boolean b) {
 		readOnly = b;
 	}
-	
-	public void addAll(Map m)
-	{
-		for(int i=0; i<m.size(); i++)
-			add(m.keys[i],m.values[i]);
+
+	public void addAll(Map m) {
+		for (int i = 0; i < m.size(); i++)
+			add(m.keys.get(i), m.values.get(i));
 	}
 }
