@@ -15,12 +15,11 @@ public class Map {
 		if (readOnly)
 			return;
 
-		for (int i = 0; i < size; i++)
-			if (keys.get(i).equals(key)) {
-				setValue(i, value);
-				return;
-			}
-
+		if (containsKey(key)) {
+			setValue(indexWhereKeyFound, value);
+			return;
+		}
+		
 		keys.add(key);
 		values.add(value);
 		size++;
@@ -43,13 +42,12 @@ public class Map {
 	public boolean remove(Object key) {
 		if (readOnly)
 			return false;
-		for (int i = 0; i < size; i++)
-			if (keys.get(i).equals(key)) {
-				setKey(i,null);
-				setValue(i, null);
-				size--;
-				return true;
-			}
+		if(containsKey(key)){
+			setKey(indexWhereKeyFound, null);
+			setValue(indexWhereKeyFound, null);
+			size--;
+			return true;
+		}
 		return false;
 	}
 
