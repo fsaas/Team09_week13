@@ -11,20 +11,33 @@ public class Set extends AbstractSet {
 	}
 
 	public void add(Object element) {
-		if (!readOnly) {
-			int newSize = size + 1;
-			if (newSize > elements.length) {
-				Object[] newElements =
-					new Object[elements.length + INITIAL_CAPACITY];
-				for (int i = 0; i < size; i++)
-					newElements[i] = elements[i];
-				elements = newElements;
-			}
-
-			if (contains(element))
-				return;
-			elements[size++] = element;
+		if (readOnly) 
+			return;
+		
+		
+		if (shouldgrow()) {
+			grow();
 		}
+
+		if (contains(element))
+			return;
+		addElement(element);
+		
+	}
+
+	private void addElement(Object element) {
+		elements[size++] = element;
+	}
+
+	private void grow() {
+		Object[] newElements = new Object[elements.length + INITIAL_CAPACITY];
+		for (int i = 0; i < size; i++)
+			newElements[i] = elements[i];
+		elements = newElements;
+	}
+
+	private boolean shouldgrow() {
+		return size + 1 > elements.length;
 	}
 
 	public boolean contains(Object element) {
